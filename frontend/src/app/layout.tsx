@@ -1,15 +1,8 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
 import './globals.css';
 import { Navbar } from '@/components/layout/Navbar';
 import { ThemeProvider } from '@/components/layout/ThemeProvider';
 import { ToastContainer } from '@/components/ui/Toast';
-
-const inter = Inter({
-  subsets: ['latin'],
-  variable: '--font-inter',
-  display: 'swap',
-});
 
 export const metadata: Metadata = {
   title: {
@@ -35,7 +28,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="fr" suppressHydrationWarning>
-      <body className={`${inter.variable} font-sans antialiased min-h-screen bg-[var(--bg-base)] text-[var(--text-primary)]`}>
+      <body className="font-sans antialiased min-h-screen bg-[var(--bg-base)] text-[var(--text-primary)]">
         <ThemeProvider>
           <Navbar />
           <main className="page-enter">{children}</main>
