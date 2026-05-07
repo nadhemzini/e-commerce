@@ -1,10 +1,12 @@
 name: Redeploy — Quick Recovery
 
+# Declenche manuellement (workflow_dispatch) — exigence prof
+# Utile apres expiration des credentials AWS Academy (toutes les 4h)
 on:
   workflow_dispatch:
     inputs:
       skip_build:
-        description: 'Skip Docker image rebuild (use existing images)'
+        description: 'Skip Docker image rebuild (reuse existing :latest images)'
         required: false
         default: 'false'
         type: choice
@@ -23,19 +25,23 @@ env:
   TF_VAR_db_name: ecommerce_dev
   TF_VAR_db_username: ecommerceadmin
   TF_VAR_db_password: ${{ secrets.DB_PASSWORD }}
-  TF_VAR_backend_image: ${{ secrets.DOCKERHUB_USERNAME }}/ecommerce-backend:latest
-  TF_VAR_frontend_image: ${{ secrets.DOCKERHUB_USERNAME }}/ecommerce-frontend:latest
+  TF_VAR_backend_image: ${{ secrets.DOCKERHUB_USERNAME }}/shopvault-backend:latest
+  TF_VAR_frontend_image: ${{ secrets.DOCKERHUB_USERNAME }}/shopvault-frontend:latest
+  TF_VAR_backend_instance_type: t3.micro
+  TF_VAR_frontend_instance_type: t3.micro
   TF_VAR_jwt_secret: ${{ secrets.JWT_SECRET }}
   TF_VAR_jwt_refresh_secret: ${{ secrets.JWT_REFRESH_SECRET }}
   TF_VAR_stripe_secret_key: ${{ secrets.STRIPE_SECRET_KEY }}
   TF_VAR_stripe_webhook_secret: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
+  TF_VAR_next_public_stripe_publishable_key: ${{ secrets.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY }}
   TF_VAR_dockerhub_username: ${{ secrets.DOCKERHUB_USERNAME }}
   TF_VAR_dockerhub_token: ${{ secrets.DOCKERHUB_TOKEN }}
 
 jobs:
-  # ═══════════════════════════════════════════════════════════════════════════
-  # Job 1 — (Optional) Rebuild and push Docker images
-  # ═══════════════════════════════════════════════════════════════════════════
+  # ===========================================================================
+  # Job 1 — (Optionnel) Rebuild et push images Docker
+  # Ignore si skip_build = 'true' (reutilise les images :latest existantes)
+  # ===========================================================================
   build-push:
     name: Build & Push Docker Images
     runs-on: ubuntu-latest
@@ -54,9 +60,9 @@ jobs:
       - name: Build and push backend image
         working-directory: backend
         run: |
-          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/ecommerce-backend:latest .
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/ecommerce-backend:latest
-          echo "✅ Backend image pushed"
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/shopvault-backend:latest .
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/shopvault-backend:latest
+          echo "Backend image pushed"
 
       - name: Build and push frontend image
         working-directory: frontend
@@ -64,15 +70,14 @@ jobs:
           docker build \
             --build-arg NEXT_PUBLIC_API_URL="" \
             --build-arg NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${{ secrets.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY }} \
-            -t ${{ secrets.DOCKERHUB_USERNAME }}/ecommerce-frontend:latest \
-            -t ${{ secrets.DOCKERHUB_USERNAME }}/ecommerce-frontend:${{ github.sha }} .
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/ecommerce-frontend:latest
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/ecommerce-frontend:${{ github.sha }}
-          echo "✅ Frontend image pushed"
+            -t ${{ secrets.DOCKERHUB_USERNAME }}/shopvault-frontend:latest .
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/shopvault-frontend:latest
+          echo "Frontend image pushed"
 
-  # ═══════════════════════════════════════════════════════════════════════════
-  # Job 2 — Terraform: recreate infrastructure
-  # ═══════════════════════════════════════════════════════════════════════════
+  # ===========================================================================
+  # Job 2 — Terraform : redeploiement de l'infrastructure
+  # Exigence prof : redeploiement rapide apres renouvellement credentials AWS Academy
+  # ===========================================================================
   terraform:
     name: Terraform Apply
     runs-on: ubuntu-latest
@@ -80,13 +85,13 @@ jobs:
     if: always() && (needs.build-push.result == 'success' || needs.build-push.result == 'skipped')
     outputs:
       alb_dns: ${{ steps.tf-output.outputs.alb_dns }}
-      cloudfront_domain: ${{ steps.tf-output.outputs.cloudfront_domain }}
-      ec2_ip: ${{ steps.tf-output.outputs.ec2_ip }}
+      frontend_ip: ${{ steps.tf-output.outputs.frontend_ip }}
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # ── Credentials AWS Academy (nouveaux apres renouvellement) ───────────
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -95,22 +100,25 @@ jobs:
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
           aws-region: ${{ secrets.AWS_REGION }}
 
+      # ── Bucket S3 state ───────────────────────────────────────────────────
       - name: Create Terraform state bucket (if not exists)
         run: |
           BUCKET="ecommerce-terraform-state-${{ secrets.AWS_ACCOUNT_ID }}"
           if ! aws s3 ls "s3://$BUCKET" 2>/dev/null; then
             aws s3 mb "s3://$BUCKET" --region ${{ secrets.AWS_REGION }}
-            echo "✅ State bucket created: $BUCKET"
+            echo "State bucket created: $BUCKET"
           else
-            echo "✅ State bucket already exists: $BUCKET"
+            echo "State bucket already exists: $BUCKET"
           fi
 
+      # ── Setup Terraform ───────────────────────────────────────────────────
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: '1.7.0'
           terraform_wrapper: false
 
+      # ── Terraform Init ────────────────────────────────────────────────────
       - name: Terraform Init
         working-directory: infrastructure
         run: |
@@ -121,33 +129,47 @@ jobs:
             -backend-config="key=state/terraform.tfstate" \
             -backend-config="region=${{ secrets.AWS_REGION }}"
 
-      - name: Remove S3 buckets from Terraform State
-        working-directory: infrastructure
-        run: |
-          # Remove old aws_s3_bucket resources from state so Terraform stops trying to refresh them
-          terraform state rm "module.s3.aws_s3_bucket.assets" || true
-          terraform state rm "module.s3.aws_s3_bucket.static" || true
-          terraform state rm "module.s3.aws_s3_bucket_public_access_block.assets" || true
-          terraform state rm "module.s3.aws_s3_bucket_public_access_block.static" || true
-          terraform state rm "module.s3.aws_s3_bucket_cors_configuration.assets" || true
-
+      # ── Terraform Plan & Apply ────────────────────────────────────────────
       - name: Terraform Plan
         working-directory: infrastructure
-        run: terraform plan -out=tfplan
+        run: |
+          terraform plan \
+            -var-file=environments/dev.tfvars \
+            -out=tfplan
 
       - name: Terraform Apply
         working-directory: infrastructure
         run: terraform apply -auto-approve tfplan
 
+      # ── Affichage des Outputs ─────────────────────────────────────────────
       - name: Get Terraform Outputs
         id: tf-output
         working-directory: infrastructure
         run: |
           ALB_DNS=$(terraform output -raw alb_dns_name 2>/dev/null || echo "")
-          CF_DOMAIN=$(terraform output -raw cloudfront_domain 2>/dev/null || echo "")
-          EC2_IP=$(terraform output -raw ec2_public_ip 2>/dev/null || echo "")
-          echo "alb_dns=$ALB_DNS" >> $GITHUB_OUTPUT
-          echo "cloudfront_domain=$CF_DOMAIN" >> $GITHUB_OUTPUT
-          echo "ec2_ip=$EC2_IP" >> $GITHUB_OUTPUT
+          FRONTEND_IP=$(terraform output -raw frontend_public_ip 2>/dev/null || echo "")
+          FRONTEND_DNS=$(terraform output -raw frontend_public_dns 2>/dev/null || echo "")
+          ASG_NAME=$(terraform output -raw backend_asg_name 2>/dev/null || echo "")
 
-          echo "══════════════════════════════════════════════"
+          echo "alb_dns=$ALB_DNS" >> $GITHUB_OUTPUT
+          echo "frontend_ip=$FRONTEND_IP" >> $GITHUB_OUTPUT
+
+          echo ""
+          echo "=============================================="
+          echo "  REDEPLOY COMPLETE"
+          echo "=============================================="
+          echo ""
+          echo "  FRONTEND (utilisateurs)"
+          echo "  URL:       http://$FRONTEND_IP"
+          echo "  DNS:       http://$FRONTEND_DNS"
+          echo ""
+          echo "  BACKEND API (via ALB)"
+          echo "  ALB DNS:   http://$ALB_DNS"
+          echo "  Health:    http://$ALB_DNS/health"
+          echo ""
+          echo "  ASG:       $ASG_NAME"
+          echo ""
+          echo "  Admin:     admin@example.com / Password123!"
+          echo "  User:      user@example.com  / Password123!"
+          echo ""
+          echo "=============================================="

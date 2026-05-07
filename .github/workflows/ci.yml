@@ -1,12 +1,13 @@
 name: CI — Tests & Lint
 
+# Declenche sur les Pull Requests vers main
 on:
   pull_request:
-    branches: [develop, main]
+    branches: [main]
 
 jobs:
   ci:
-    name: Lint, Type-check & Tests
+    name: Lint, Type-check, Tests & Terraform Validate
     runs-on: ubuntu-latest
 
     services:
@@ -92,3 +93,19 @@ jobs:
           NEXT_PUBLIC_API_URL: http://localhost:4000
           NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: pk_test_placeholder
         run: npm run build
+
+      # ── Terraform Validate ────────────────────────────────────────────────
+      # Exigence prof : terraform validate dans le workflow CI
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: '1.7.0'
+          terraform_wrapper: false
+
+      - name: Terraform Init (local, sans backend S3)
+        working-directory: infrastructure
+        run: terraform init -backend=false
+
+      - name: Terraform Validate
+        working-directory: infrastructure
+        run: terraform validate
