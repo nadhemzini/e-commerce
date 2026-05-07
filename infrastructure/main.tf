@@ -66,7 +66,7 @@ module "rds" {
   db_password        = var.db_password
   vpc_id             = module.vpc.vpc_id
   private_subnet_ids = module.vpc.private_subnet_ids
-  public_subnet_ids  = module.vpc.public_subnet_ids
+  # public_subnet_ids supprime — RDS uniquement dans subnets prives (publicly_accessible=false)
   sg_rds_id          = module.vpc.sg_rds_id
 }
 
