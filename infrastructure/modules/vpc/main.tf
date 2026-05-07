@@ -131,7 +131,7 @@ resource "aws_security_group" "alb" {
 
   # Outbound : tout autorisé (vers instances backend)
   egress {
-    description = "Tout le trafic sortant autorisé"
+    description = "All outbound traffic allowed"
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
@@ -162,7 +162,7 @@ resource "aws_security_group" "backend" {
 
   # Outbound : tout autorisé (pour docker pull depuis NAT GW, accès RDS)
   egress {
-    description = "Tout le trafic sortant autorisé"
+    description = "All outbound traffic allowed"
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
@@ -195,7 +195,7 @@ resource "aws_security_group" "frontend" {
   # Inbound : SSH pour debug/déploiement
   # ⚠️ TODO PRODUCTION : remplacer 0.0.0.0/0 par votre IP fixe — ex: ["XX.XX.XX.XX/32"]
   ingress {
-    description = "SSH debug - TODO: restreindre à votre IP fixe en production"
+    description = "SSH debug - TODO restrict to fixed IP in production"
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
@@ -204,7 +204,7 @@ resource "aws_security_group" "frontend" {
 
   # Outbound : tout autorisé (pour docker pull, communication avec ALB backend)
   egress {
-    description = "Tout le trafic sortant autorisé"
+    description = "All outbound traffic allowed"
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
@@ -235,7 +235,7 @@ resource "aws_security_group" "rds" {
 
   # Outbound : tout autorisé
   egress {
-    description = "Tout le trafic sortant autorisé"
+    description = "All outbound traffic allowed"
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
