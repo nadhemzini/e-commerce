@@ -1,0 +1,47 @@
+import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
+import './globals.css';
+import { Navbar } from '@/components/layout/Navbar';
+import { ThemeProvider } from '@/components/layout/ThemeProvider';
+import { ToastContainer } from '@/components/ui/Toast';
+
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-inter',
+  display: 'swap',
+});
+
+export const metadata: Metadata = {
+  title: {
+    default: 'ShopVault — Premium E-Commerce',
+    template: '%s | ShopVault',
+  },
+  description:
+    'Discover curated products with the best deals. Shop electronics, clothing, books, home goods, and more.',
+  keywords: ['e-commerce', 'shopping', 'online store', 'deals'],
+  openGraph: {
+    type: 'website',
+    siteName: 'ShopVault',
+    title: 'ShopVault — Premium E-Commerce',
+    description: 'Discover curated products with the best deals.',
+  },
+  robots: { index: true, follow: true },
+};
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang="fr" suppressHydrationWarning>
+      <body className={`${inter.variable} font-sans antialiased min-h-screen bg-[var(--bg-base)] text-[var(--text-primary)]`}>
+        <ThemeProvider>
+          <Navbar />
+          <main className="page-enter">{children}</main>
+          <ToastContainer />
+        </ThemeProvider>
+      </body>
+    </html>
+  );
+}
