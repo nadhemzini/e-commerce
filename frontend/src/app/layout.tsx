@@ -6,16 +6,16 @@ import { ToastContainer } from '@/components/ui/Toast';
 
 export const metadata: Metadata = {
   title: {
-    default: 'ShopVault — Premium E-Commerce',
-    template: '%s | ShopVault',
+    default: 'market — Premium E-Commerce',
+    template: '%s | market',
   },
   description:
     'Discover curated products with the best deals. Shop electronics, clothing, books, home goods, and more.',
   keywords: ['e-commerce', 'shopping', 'online store', 'deals'],
   openGraph: {
     type: 'website',
-    siteName: 'ShopVault',
-    title: 'ShopVault — Premium E-Commerce',
+    siteName: 'market',
+    title: 'market — Premium E-Commerce',
     description: 'Discover curated products with the best deals.',
   },
   robots: { index: true, follow: true },

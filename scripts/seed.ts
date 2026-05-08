@@ -129,7 +129,7 @@ async function seed() {
         email: 'admin@example.com',
         passwordHash,
         firstName: 'Admin',
-        lastName: 'ShopVault',
+        lastName: 'market',
         role: Role.ADMIN,
       },
     }),
