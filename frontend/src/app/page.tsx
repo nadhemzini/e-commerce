@@ -53,19 +53,19 @@ export default function HomePage() {
   return (
     <div className="min-h-screen">
       {/* ── HERO ─────────────────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-indigo-950 via-slate-900 to-slate-950 text-white">
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#0F0F0F] via-[#1A1A2E] to-[#0F0F0F] text-white">
         {/* Background blobs */}
-        <div className="absolute -top-40 -left-40 w-96 h-96 bg-indigo-600/30 rounded-full blur-3xl" />
-        <div className="absolute -bottom-20 right-10 w-80 h-80 bg-violet-600/20 rounded-full blur-3xl" />
+        <div className="absolute -top-40 -left-40 w-96 h-96 rounded-full blur-3xl" style={{ background: 'rgba(245,166,35,0.18)' }} />
+        <div className="absolute -bottom-20 right-10 w-80 h-80 rounded-full blur-3xl" style={{ background: 'rgba(232,148,26,0.12)' }} />
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-32">
           <div className="max-w-3xl">
-            <div className="badge badge-accent mb-6 text-indigo-300 bg-indigo-500/20 border border-indigo-500/30 text-sm px-3 py-1">
+            <div className="badge mb-6 text-sm px-3 py-1" style={{ background: 'rgba(245,166,35,0.18)', border: '1px solid rgba(245,166,35,0.35)', color: '#F5A623' }}>
               ✨ Nouvelle collection 2026
             </div>
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-tight mb-6">
               Découvrez vos{' '}
-              <span className="bg-gradient-to-r from-indigo-400 via-violet-400 to-pink-400 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-[#F5A623] via-[#E8941A] to-[#F5C842] bg-clip-text text-transparent">
                 produits préférés
               </span>{' '}
               à prix imbattables
@@ -199,7 +199,7 @@ export default function HomePage() {
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
             {perks.map((perk) => (
               <div key={perk.title} className="flex flex-col items-center text-center gap-3">
-                <div className="w-12 h-12 rounded-2xl bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center text-accent dark:text-accent-dark">
+                <div className="w-12 h-12 rounded-2xl flex items-center justify-center text-[#0F0F0F]" style={{ background: 'linear-gradient(135deg, #F5A623 0%, #E8941A 100%)' }}>
                   {perk.icon}
                 </div>
                 <div>

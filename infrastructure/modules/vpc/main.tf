@@ -214,11 +214,9 @@ resource "aws_security_group" "frontend" {
   tags = { Name = "${var.app_name}-${var.environment}-sg-frontend" }
 }
 
-# -----------------------------------------------------------------------------
-# SG RDS PostgreSQL
-# Exigence prof : port 5432 UNIQUEMENT depuis SG Backend
+
 # Aucune règle depuis internet. Aucune règle depuis 0.0.0.0/0 sur 5432.
-# -----------------------------------------------------------------------------
+
 resource "aws_security_group" "rds" {
   name        = "${var.app_name}-${var.environment}-sg-rds"
   description = "RDS PostgreSQL: port 5432 depuis backend EC2 uniquement"

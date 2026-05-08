@@ -10,20 +10,20 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
+        sans: ['DM Sans', 'system-ui', 'sans-serif'],
       },
       colors: {
         accent: {
-          DEFAULT: '#6366F1',
-          dark: '#818CF8',
-          hover: '#4F46E5',
+          DEFAULT: '#F5A623',
+          dark: '#F5A623',
+          hover: '#E8941A',
         },
         success: {
-          DEFAULT: '#22C55E',
+          DEFAULT: '#27AE60',
           dark: '#4ADE80',
         },
         error: {
-          DEFAULT: '#EF4444',
+          DEFAULT: '#C0392B',
           dark: '#F87171',
         },
       },

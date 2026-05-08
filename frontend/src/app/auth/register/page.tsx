@@ -41,7 +41,7 @@ export default function RegisterPage() {
             <UserPlus className="w-7 h-7 text-white" />
           </div>
           <h1 className="text-2xl font-bold text-[var(--text-primary)]">Créer un compte</h1>
-          <p className="text-[var(--text-secondary)] mt-1 text-sm">Rejoignez market dès aujourd'hui.</p>
+          <p className="text-[var(--text-secondary)] mt-1 text-sm">Rejoignez SHOPVault dès aujourd'hui.</p>
         </div>
         <div className="card p-8">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">

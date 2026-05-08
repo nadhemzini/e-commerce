@@ -33,12 +33,13 @@ export function Navbar() {
           <div className="flex h-16 items-center justify-between gap-4">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2 shrink-0 group">
-              <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center
-                              group-hover:scale-110 transition-transform duration-150">
-                <Package className="w-5 h-5 text-white" />
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center
+                              group-hover:scale-110 transition-transform duration-150"
+                style={{ background: 'linear-gradient(135deg, #F5A623 0%, #E8941A 100%)' }}>
+                <Package className="w-5 h-5" style={{ color: '#0F0F0F' }} />
               </div>
-              <span className="font-bold text-lg tracking-tight text-[var(--text-primary)]">
-                Shop<span className="text-accent dark:text-accent-dark">Vault</span>
+              <span style={{ fontFamily: '\'Playfair Display\', Georgia, serif', fontWeight: 800, fontSize: '1.2rem', letterSpacing: '0.01em', color: 'var(--text-primary)' }}>
+                SHOP<span style={{ color: '#F5A623' }}>Vault</span>
               </span>
             </Link>
 
