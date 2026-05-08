@@ -31,7 +31,7 @@ variable "instance_type" {
 
 variable "frontend_image" {
   type        = string
-  description = "Image Docker Hub frontend (ex: nadhemzini/shopvault-frontend:latest)"
+  description = "Image Docker Hub frontend (ex: nadhemz/shopvault-frontend:latest)"
 }
 
 variable "alb_dns_name" {
