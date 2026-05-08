@@ -17,11 +17,11 @@ db_username = "ecommerceadmin"
 
 # --- Images Docker Hub --------------------------------------------------------
 # Format : <dockerhub_username>/<image_name>:<tag>
-backend_image  = "yassinetanabene/shopvault-backend:latest"
-frontend_image = "yassinetanabene/shopvault-frontend:latest"
+backend_image  = "nadhemzini/shopvault-backend:latest"
+frontend_image = "nadhemzini/shopvault-frontend:latest"
 
 # --- Docker Hub ---------------------------------------------------------------
-dockerhub_username = "yassinetanabene"
+dockerhub_username = "nadhemzini"
 # dockerhub_token = injected via TF_VAR_dockerhub_token from GitHub Secret DOCKERHUB_TOKEN
 
 # --- Types d'instances EC2 (t3.micro pour AWS Academy) -----------------------

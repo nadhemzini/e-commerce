@@ -47,12 +47,12 @@ variable "db_password" {
 # -----------------------------------------------------------------------------
 variable "backend_image" {
   type        = string
-  description = "Image Docker Hub backend (ex: yassinetanabene/shopvault-backend:latest)"
+  description = "Image Docker Hub backend (ex: nadhemzini/shopvault-backend:latest)"
 }
 
 variable "frontend_image" {
   type        = string
-  description = "Image Docker Hub frontend (ex: yassinetanabene/shopvault-frontend:latest)"
+  description = "Image Docker Hub frontend (ex: nadhemzini/shopvault-frontend:latest)"
 }
 
 variable "dockerhub_username" {

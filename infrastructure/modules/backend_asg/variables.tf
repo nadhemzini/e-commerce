@@ -41,7 +41,7 @@ variable "instance_type" {
 
 variable "backend_image" {
   type        = string
-  description = "Image Docker Hub backend (ex: yassinetanabene/shopvault-backend:latest)"
+  description = "Image Docker Hub backend (ex: nadhemzini/shopvault-backend:latest)"
 }
 
 variable "db_endpoint" {

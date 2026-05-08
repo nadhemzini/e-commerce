@@ -8,8 +8,8 @@ curl -L "https://github.com/docker/compose/releases/download/v2.26.1/docker-comp
 chmod +x /usr/local/bin/docker-compose
 
 echo "Downloading deployment files..."
-aws s3 cp s3://app-assets-yassine-new/deploy.zip .
-aws s3 cp s3://app-assets-yassine-new/.env.prod .
+aws s3 cp s3://app-assets-nadhem-new/deploy.zip .
+aws s3 cp s3://app-assets-nadhem-new/.env.prod .
 
 echo "Extracting..."
 unzip -o deploy.zip || true

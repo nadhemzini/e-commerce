@@ -7,7 +7,7 @@ sudo ln -sf /usr/local/bin/docker-compose /usr/bin/docker-compose
 mkdir -p /home/ec2-user/app
 cd /home/ec2-user/app
 
-aws s3 cp s3://app-assets-yassine-dev/deploy.zip .
+aws s3 cp s3://app-assets-nadhem-dev/deploy.zip .
 unzip -o deploy.zip
 
 sudo docker-compose -f docker-compose.prod.yml down
